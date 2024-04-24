@@ -2,8 +2,10 @@ import streamlit as st
 import pickle
 import pandas as pd
 import numpy as np
+import plotly  
 import plotly.graph_objs as go
 import plotly.figure_factory as ff
+import plotly.express as px  
 from sklearn.preprocessing import OrdinalEncoder
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
