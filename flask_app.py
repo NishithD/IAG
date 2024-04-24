@@ -1,0 +1,35 @@
+
+from flask import Flask, request, jsonify, render_template, redirect
+import pickle  # Simulating ML model prediction
+
+app = Flask(__name__)
+classifier_model=pickle.load(open('classifier.pkl','rb'))
+labels_encoder=pickle.load(open('labels_encoder.pkl','rb'))
+
+# Simulate ML model prediction
+def check_request_malicious(headers):
+    # In a real scenario, you would pass the headers to your ML model for prediction
+    # For demonstration, let's randomly decide if a request is malicious (0) or benign (1)
+    headers_encoded={idx: ele for idx, ele in enumerate(list(labels_encoder.categories_[0]))}
+    response= classifier_model.predict(headers_encoded)
+    return {"resp": headers_encoded[response[0]], "message": "Request is malicious" if response[0]!=0 else "Request is benign"}
+
+@app.route('/')
+def home():
+    # Check if the request is malicious
+    is_malicious = check_request_malicious(request.headers)
+    
+    if is_malicious["resp"] != 0:
+        # Redirect user if the request is detected as malicious
+        return redirect('/malicious')
+    else:
+        # Return a welcome message if the request is benign
+        return jsonify({"message": "Hello, welcome to your feed"})
+
+@app.route('/malicious')
+def malicious():
+    # Render a template for malicious requests
+    return render_template('malicious.html')
+
+if __name__ == '__main__':
+    app.run(debug=True)
